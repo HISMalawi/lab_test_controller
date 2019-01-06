@@ -1,0 +1,13 @@
+
+<%= form_tag("/user/authenticate", id: "login_form", method: 'get', enctype: 'multipart/form-data') do %>
+
+
+	<%= text_field(:user, :username, :helpText=> "Enter Username", 
+	    :textCase => "lower",
+	    :field_type => "password")%><br>
+
+	<%= password_field(:user, :password, :helpText => "Enter Password", 
+		:textCase => "lower",
+	    :field_type => "password")%><br>
+
+<%end%>
