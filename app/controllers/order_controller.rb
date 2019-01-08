@@ -128,7 +128,13 @@ class OrderController < ApplicationController
     end 
 
     def get_target_labs 
-        res = OrderService.retrieve_target_labs.sort()
+        search_string = params[:search_string].downcase
+        res = OrderService.retrieve_target_labs.sort()        
+        if search_string.length > 0
+            res = res.map(&:downcase)
+            res = res.grep(/#{search_string}/)
+            res = res.map(&:titleize)
+        end        
         render plain: "<li>" + res.uniq.map{|n| n } .join("</li><li>") + "</li>" and return
     end
 
