@@ -18,7 +18,7 @@ class Auto12Epl
 
   DPI = 203
   LABEL_WIDTH_IN = 2.0
-  LABEL_HEIGHT_IN = 1.0
+  LABEL_HEIGHT_IN = 0.5
 
   # font constants
   FONT_X_DOTS = [8, 10, 12, 14, 32]
@@ -30,8 +30,8 @@ class Auto12Epl
   HEIGHT_ELEMENT = 0.1
   HEIGHT_ELEMENT_SPACE = 0.01
   HEIGHT_PID = 0.1
-  HEIGHT_BARCODE = 0.394
-  HEIGHT_BARCODE_HUMAN = 0.083
+  HEIGHT_BARCODE = 0.200
+  HEIGHT_BARCODE_HUMAN = 0.050
 
   # element widths
   WIDTH_ELEMENT = 1.94
@@ -43,11 +43,11 @@ class Auto12Epl
   L_MARGIN_BARCODE = 0.25
 
   # stat locations
-  L_MARGIN_BARCODE_W_STAT = 0.281
-  L_MARGIN_W_STAT = 0.202
+  L_MARGIN_BARCODE_W_STAT = 0.200
+  L_MARGIN_W_STAT = 0.150
   STAT_WIDTH_ELEMENT = 1.78
-  STAT_WIDTH_BARCODE = 1.307
-  STAT_WIDTH_BARCODE_HUMAN = 1.548
+  STAT_WIDTH_BARCODE = 1.150
+  STAT_WIDTH_BARCODE_HUMAN = 1.400
 
   # constants for generated EPL code
   BARCODE_TYPE = '1A'
@@ -59,7 +59,7 @@ class Auto12Epl
   ASCII_VERT_MULT = 1
 
 
-  def initialize(element_font = 2, barcode_human_font = 2)
+  def initialize(element_font = 1, barcode_human_font = 1)
     @element_font = element_font
     @barcode_human_font = barcode_human_font
   end
@@ -133,9 +133,9 @@ class Auto12Epl
 
     # combine EPL statements
     if stat == nil
-      "\nN\nR216,0\nZT\nS2\n#{name_element}\n#{pid_dob_age_gender_element}\n#{barcode_element}\n#{barcode_human_element}\n#{collector_element}\n#{tests_element}\nP2\n"
+      "\nN\nR216,0\nZT\nS1\n#{name_element}\n#{pid_dob_age_gender_element}\n#{barcode_element}\n#{barcode_human_element}\n#{collector_element}\n#{tests_element}\nP3\n"
     else
-      "\nN\nR216,0\nZT\nS2\n#{name_element}\n#{pid_dob_age_gender_element}\n#{barcode_element}\n#{barcode_human_element}\n#{collector_element}\n#{tests_element}\n#{stat_element}\nP2\n"
+      "\nN\nR216,0\nZT\nS1\n#{name_element}\n#{pid_dob_age_gender_element}\n#{barcode_element}\n#{barcode_human_element}\n#{collector_element}\n#{tests_element}\n#{stat_element}\nP3\n"
     end
 
   end
@@ -143,7 +143,7 @@ class Auto12Epl
   # Add spaces before and after the stat text so that black bars appear across the left edge of label
   def pad_stat_w_space(stat)
     num_char = max_characters(@element_font, LABEL_HEIGHT_IN)
-    spaces_needed = (num_char - stat.length) / 2
+    spaces_needed = (num_char - stat.length) / 1
     space = ''
     spaces_needed.times do
       space = space + ' '
