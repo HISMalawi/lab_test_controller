@@ -88,7 +88,8 @@ class OrderController < ApplicationController
     end
 
     def save_order
-
+        
+        add_test = params[:add_test] if !params[:add_test].blank?
         identifier = params[:identifier]
         order_location = params[:order_location]
         specimen_type = params[:specimen_type]
@@ -98,13 +99,20 @@ class OrderController < ApplicationController
         requesting_clinician = params[:order]['requesting_clinician']
         tracking_number = ''
         t_n = []
-        tests.each do |t|
-            t_n.push(t)
-            status = OrderService.save_order(order_location,specimen_type,t_n,priority,target_lab,requesting_clinician,[session[:user][1],session[:user][2],session[:user][3],session[:user][0]],session[:patient],identifier)
-            if status[0] == true
-                tracking_number = status[1]
+        if add_test == 'No'
+            tests.each do |t|
+                t_n.push(t)
+                status = OrderService.save_order(order_location,specimen_type,t_n,priority,target_lab,requesting_clinician,[session[:user][1],session[:user][2],session[:user][3],session[:user][0]],session[:patient],identifier)
+                if status[0] == true
+                    tracking_number = status[1]
+                end
+                t_n = []
             end
-            t_n = []
+        else
+            status = OrderService.save_order(order_location,specimen_type,tests,priority,target_lab,requesting_clinician,[session[:user][1],session[:user][2],session[:user][3],session[:user][0]],session[:patient],identifier)
+                if status[0] == true
+                    tracking_number = status[1]
+                end
         end
 
         print_url = "/order/print_tracking_number?tracking_number=#{tracking_number}"
