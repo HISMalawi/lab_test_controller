@@ -46,7 +46,7 @@
                {:helpText => 'Specimen type',
                 :id => "specimen_type",
                 :tt_requireNextClick => false,
-                :tt_onLoad => "__$('nextButton').style.display = 'none';"
+                :tt_onLoad => "__$('nextButton').style.display = 'none';__$('keyboard').style.display = 'none"
                }%>
 
 <%= select_tag 'test_types[]', nil,
@@ -56,6 +56,14 @@
                :multiple =>  true,
                :tt_pageStyleClass => "longSelectList"
 %>
+
+<%= select_tag "add_test", options_for_select(['Yes','No']),
+               {:helpText => 'Add tests in one order?',
+                :id => "question",
+                :tt_requireNextClick => true,
+                :tt_onLoad => "__$('nextButton').style.display = 'inline';"
+               }%>
+
 <%= select_tag 'target_labs', nil, 
     :helpText => "Target Lab",
     :tt_onLoad => "__$('nextButton').style.display= 'inline'; __$('keyboard').style.display = 'black'; set_ajaxURL_for_suggestions('/order/get_target_labs?name=', '' );"    
