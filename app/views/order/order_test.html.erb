@@ -63,7 +63,6 @@
                 :tt_requireNextClick => true,
                 :tt_onLoad => "__$('nextButton').style.display = 'inline';"
                }%>
-
 <%= select_tag 'target_labs', nil, 
     :helpText => "Target Lab",
     :tt_onLoad => "__$('nextButton').style.display= 'inline'; __$('keyboard').style.display = 'black'; set_ajaxURL_for_suggestions('/order/get_target_labs?name=', '' );"    
