@@ -22,7 +22,7 @@ class UserController < ApplicationController
         password = params[:user][:password]
         
         status = UserService.authenticate(username,password)
-       
+        
         if status[0] == true           
             token = status[1]['authorization']['token']
             user_id = status[1]['authorization']['user']['user_id']
@@ -32,8 +32,13 @@ class UserController < ApplicationController
             session['user'] = [token,user_id,f_name,s_name]
             redirect_to '/user/index'
         else
-            redirect_to  '/', flash: {error: 'wrong username or password'} if status[1].message == "401 Unauthorized" 
-            redirect_to  '/', flash: {error: 'wrong username or password'} if status[1].message == "500 Internal Server Error"            
+            if status[1].message == "401 Unauthorized"
+                redirect_to  '/', flash: {error: 'wrong username or password'} 
+            elsif  status[1].message == "500 Internal Server Error"
+                redirect_to  '/', flash: {error: 'wrong username or password'} 
+            else
+                redirect_to  '/', flash: {error: 'wrong username or password'} 
+            end
         end           
         
     end

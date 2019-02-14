@@ -27,6 +27,20 @@ class OrderController < ApplicationController
         end
     end
 
+    def result_entrly
+        @identifier = params[:identifier]
+        res = OrderService.get_tests_with_no_results(@identifier)
+        
+        @data = false
+        if res != false
+            @data = res
+        end
+ 
+        render :layout => false
+    end
+
+   
+
     def update_order_confirmation
         tracking_number = params[:tracking_number]
         identifier = params[:identifier]
@@ -85,6 +99,37 @@ class OrderController < ApplicationController
         end
 
         @specimen_types = specimen_type.sort
+    end
+
+    def enter_result_value
+        @test_name = params[:test_name]
+        @tracking_number = params[:tracking_number]
+        @identifier = params[:identifier]
+        
+        res = OrderService.query_test_measures(@test_name)
+        if res != false
+            @data = res
+        end
+    
+        render :layout => false
+    end
+
+    def save_result
+        results = params[:data].to_unsafe_h   
+        tracking_number = params[:tracking_number]
+        test_name = params[:test_name]   
+        test_name = test_name.gsub("AND","&")
+       
+        
+        who_updated = {
+                    'id_number': '',
+                    'phone_number': '',
+                    'first_name': '',
+                    'last_name': ''
+        }
+          
+        res = OrderService.save_results(tracking_number,test_name,results,who_updated)
+        render plain: res[0].to_json and return
     end
 
     def save_order
