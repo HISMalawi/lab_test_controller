@@ -274,10 +274,13 @@
                             onclick="window.location='/order/order_test?identifier=<%= @national_id %>&name=<%= @name %>&gender=<%= @gender %>&dob=<%= @dob %>&address=<%= @address %>'">
                                 <span>Order Tests</span>
                         </button>
-                        <button  id="orderTests" class="green right" 
-                            onclick="window.location='/order/enter_result?identifier=<%= @national_id %>'">
-                                <span>Enter Results</span>
-                        </button>
+                        <% config = YAML.load_file("#{Rails.root}/config/application.yml") %>
+                        <% if config['permit_results_entry'] == true %> 
+                            <button  id="orderTests" class="green right" 
+                                onclick="window.location='/order/enter_result?identifier=<%= @national_id %>'">
+                                    <span>Enter Results</span>
+                            </button>
+                        <% end %>
                       <button id="cancel" class="red left" onclick="WrongPatient()"><span>Scan Again</span></button>
                     </div>
                 </div>

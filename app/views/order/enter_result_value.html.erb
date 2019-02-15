@@ -107,10 +107,12 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/dashboard.css"/>
         <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"/>
         <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap-responsive.css"/>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/edrs.css"/>
 
         <%= stylesheet_link_tag "datatable/css/dataTables.bootstrap.min" %>
         <%= javascript_include_tag "datatable/js/jquery.dataTables.min" %>
         <%= javascript_include_tag "datatable/js/dataTables.bootstrap.min" %>
+        
         <style type="text/css">
             #barcode {
                 background:transparent none repeat scroll 0 0;
@@ -148,12 +150,7 @@
             }
 
 
-            button{
-                font-size: 15pt !important;
-                font-weight: bold;
-                margin-right: 15px;
-                min-width: 150px !important;
-            }
+      
             #details th{
                 font-size: 1.28em;
                 padding: 12px;
@@ -164,10 +161,6 @@
                 padding: 12px;
             }
         </style>
-
-
-
-
     </head>
     <body id="mateme">  
         <div id="container">      
@@ -179,21 +172,42 @@
                         <div class="block" style="">
                             <div class="navbar navbar-inner block-header" style='padding-top: 8px;border-bottom: 2px solid darkred;background: darkslategray; border-radius: 0px;'>
                                 <div class="muted pull-left">
-                                    <span style='font-weight: bold;font-size: 1.3em; color: white'>Entering Results For: <span style="color:black"><%= @test_name %> </span>  </span> 
+                                    <span style='font-weight: bold;font-size: 1.3em; color: white'>Entering Results For: <span style="color:white"><%= @test_name %> </span>  </span> 
                                 </div>
                                 <div class="muted">
-                                   <span style="float:right;font-weight: bold;color:white;font-size: 1.3em;">Patient Name:  <span style="float:right;margin-left:6px;color:black"> Gift Malolo</span> </span>
+                                   <span style="float:right;font-weight: bold;color:white;font-size: 1.3em;">Patient Name:  <span style="float:right;margin-left:6px;color:white"> Gift Malolo</span> </span>
                                 </div>
                             </div>
-                            <div class="block-content collapse in" style="padding-left:3%;padding-right:3%;width:35%;margin-left:2%;height:500px;overflow: auto;">
-                                <table class="table" id="test_measures">
-                        
-                                </table>
-                            </div>
+                            
                         </div>
                         <!-- /block -->
                     </div>
-                   
+
+                    <div class="span7" style="width: 90%;border-right: none;height:30px;margin-top:3%;margin-left: 1%;">
+                        <!-- block -->
+                        <div class="span7" style="width: 30%;border-right: none;height:30px;">
+                            
+                                <div style="padding-left:3%;padding-right:3%;width:100%;margin-left:2%;height:500px;overflow: auto;">
+                                    <table class="table" id="test_measures">
+                            
+                                    </table>                                    
+                                </div>                            
+                        </div>
+
+                        <div class="span7" style="width: 60%;border-right: none;height:30px;">
+                      
+                            <div id="keypad">
+                                    <span class="keypad">
+                                    </span>
+                            </div>
+
+                        </div>
+
+                        <!-- /block -->
+                    </div>
+
+
+
                 </div>
               
                 <div id="footer" class="dark">
@@ -220,9 +234,9 @@
 
 
 <script type="text/javascript">
-    $("#details").dataTable();
+   
     var measure_names = [];
-
+    var text_name = "";
     function loadMeasures()
     {   var test_name = '<%= @test_name %>';
 
@@ -246,12 +260,17 @@
                             var row = tr.insertRow(counter);
                             var cel = row.insertCell(0);
                             cel.innerHTML = name;
+                            cel.style.fontWeight = "900";
+                            cel.style.fontSize = "100%";
                             measure_names.push(name);
 
                             var x = document.createElement("INPUT");
                             x.setAttribute('class','form-control');
-                            x.setAttribute('width','120%');
+                            x.setAttribute('width','160%');
                             x.setAttribute('id',name);
+                            x.onclick = function(){console.log(this.id); text_name = this.id};
+                            x.style.border = "thick solid darkslategray";
+                            x.setAttribute('height',"400%");
                             var cel = row.insertCell(1);
                             cel.appendChild(x);
                             counter = counter + 1;
@@ -259,6 +278,7 @@
 
         }
     }
+
 
     function saveMeasures()
     { 
@@ -301,6 +321,162 @@
 
     loadMeasures();
 
+
+
+	function showKeyboardX(){
+        key = document.getElementById("keypad")
+        if(key.style.display == 'none' || key.style.display == ""){
+            key.style.display = "inline";
+            return
+        }
+
+        key.style.display = "none";
+    }
+
+
+    function getCharButtonSetID(character,id){
+        return '<button onMouseDown="press(\''+character+'\');" class="keyboardButton button blue" id="'+id+'">' +"<span style='width:32px'>"+character+"</span>"+ "</button>";
+    }
     
+    function getButtonString(id,string){
+        if (id == "Space"){
+        id = "Whitespace";
+        }
+        return "<button onMouseDown='press(this.id);' class='keyboardButton' id='"+id+"'>"+string+"</button>";
+    }
+    
+    function getButtons(chars){
+        var buttonLine = "";
+        for(var i=0; i<chars.length; i++){
+        character = chars.substring(i,i+1);
+        buttonLine += getCharButtonSetID(character,character)
+        }
+        return buttonLine;
+    }
+  
+
+    function pop_keyboard()
+	{   showKeyboardX();
+    }
+    
+    pop_keyboard();
+    keyboard = document.getElementsByClassName("keypad")[0];
+	showAlphaKeypad();
+
+    function press(pressedChar){
+        var txt = document.getElementById(text_name);
+        switch (pressedChar) {
+        case 'backspace':
+            txt.value = txt.value.substring(0,txt.value.length-1);
+         
+            return;
+        case 'Whitespace':
+            txt.value+= " ";
+           
+            return;
+        case 'clear':
+            txt.value = "";
+            
+            return;
+        case 'num':
+            showNumericKeypad();
+            return;
+        case 'slash':
+            txt.value+= "/";
+            
+            return;
+        case 'dash':
+            txt.value+= "-";
+          
+            return;
+        case 'abc':
+            showAlphaKeypad();
+            return
+        }
+        
+        txt.value+= pressedChar;
+        
+    }
+  
+    function showNumericKeypad(){
+        document.getElementById("keypad").style.height = "145";
+        keyboard.innerHTML = getButtons("123");
+        keyboard.innerHTML+= getButtons("456");
+        keyboard.innerHTML+= getButtons("7890");
+        keyboard.innerHTML+= getButtonString('space','<span>Space</span>');
+        keyboard.innerHTML+= getButtonString('clear','<span>Clear</span>');
+        keyboard.innerHTML+= getButtonString('backspace','<span>Bksp</span>');
+        keyboard.innerHTML+= getButtonString('abc','<span>abc</span>');
+        keyboard.innerHTML+= getButtonString('dash','<span>-</span>');
+        keyboard.innerHTML+= getButtonString('slash','<span>/</span>');
+    }
+        
+    function showAlphaKeypad(){
+        document.getElementById("keypad").style.height = "290 !important";  
+        keyboard.innerHTML= getButtons("0123456789") + "</br>";
+        keyboard.innerHTML+= getButtons("QWERTYUIOP") + "</br>";
+        keyboard.innerHTML+= getButtons("ASDFGHJKL:") + "</br>";
+        keyboard.innerHTML+= getButtons("ZXCVBNM,.?>=<");
+        keyboard.innerHTML+= getButtonString('backspace','<span>Bksp</span>');
+        keyboard.innerHTML+= getButtonString('Space','<span>Space</span>');
+        keyboard.innerHTML+= getButtonString('clear','<span>Clear</span>');
+    }
+        
 
 </script>
+
+
+
+
+
+
+<style type="text/css">
+	  #keypad{
+        background-color: #FFFFFF;
+        border: 2px solid darkslategray;
+        border-radius: 15px 15px 15px 15px;
+        display: none;
+        height: 45%;
+        padding: 2.5%;
+        position: absolute;
+        right: 6%;
+        top: 11%;
+        width: 47%;
+        opacity: 10;
+    }
+
+	#backspace{
+	  position:absolute;
+	  left:6%;
+	  bottom:2%;
+	}
+
+ 
+	#Whitespace{
+	  position:absolute;
+	  left:20%;
+	  bottom:2%;
+      width:50%;
+	}
+
+	#clear{
+	   position:absolute;
+	  left:75%;
+	  bottom:2%;
+	}
+
+	.keyboardButton{		
+		width: 10%;
+		height: 18%;
+    }
+
+
+	.button:hover {background-color: #3e8e41}
+
+	.button:active {
+	  background-color: #3e8e41;
+	  box-shadow: 0 5px #666;
+	  transform: translateY(4px);	
+
+
+</style>
