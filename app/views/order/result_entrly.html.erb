@@ -107,6 +107,7 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/dashboard.css"/>
         <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"/>
         <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap-responsive.css"/>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/edrs.css"/>
 
         <%= stylesheet_link_tag "datatable/css/dataTables.bootstrap.min" %>
         <%= javascript_include_tag "datatable/js/jquery.dataTables.min" %>
@@ -148,12 +149,6 @@
             }
 
 
-            button{
-                font-size: 15pt !important;
-                font-weight: bold;
-                margin-right: 15px;
-                min-width: 150px !important;
-            }
             #details th{
                 font-size: 1.28em;
                 padding: 12px;
@@ -214,7 +209,10 @@
                         </div>
                         <!-- /block -->
                     </div>
-                   
+                    <div id="keypad">
+                            <span class="keypad">
+                            </span>
+                    </div>
                 </div>
               
                 <div id="footer" class="dark">
@@ -228,10 +226,171 @@
                 </div>
             </div> 
         </div>
+       
     </body>
 </html>
 
 
 <script type="text/javascript">
     $("#details").dataTable();
+
+	var datatable = $("#rst").dataTable();
+    var elms = document.getElementById("details_filter").getElementsByTagName("*");
+   	var inpt = elms[1];
+	inpt.setAttribute("id","txt_search");
+	inpt.setAttribute("onclick","pop_keyboard()");
+	
+
+	function pop_keyboard()
+	{   showKeyboardX();
+	}
+
+	keyboard = document.getElementsByClassName("keypad")[0];
+	showAlphaKeypad();
+
+	function showKeyboardX(){
+        key = document.getElementById("keypad")
+        if(key.style.display == 'none' || key.style.display == ""){
+            key.style.display = "inline";
+            return
+        }
+
+        key.style.display = "none";
+    }
+
+
+
+
+function getCharButtonSetID(character,id){
+  return '<button onMouseDown="press(\''+character+'\');" class="keyboardButton button blue" id="'+id+'">' +"<span style='width:32px'>"+character+"</span>"+ "</button>";
+}
+
+function getButtonString(id,string){
+  if (id == "Space"){
+    id = "Whitespace";
+  }
+  return "<button onMouseDown='press(this.id);' class='keyboardButton' id='"+id+"'>"+string+"</button>";
+}
+
+function getButtons(chars){
+  var buttonLine = "";
+  for(var i=0; i<chars.length; i++){
+    character = chars.substring(i,i+1);
+    buttonLine += getCharButtonSetID(character,character)
+  }
+  return buttonLine;
+}
+
+function press(pressedChar){
+	var txt = document.getElementById("txt_search");
+  switch (pressedChar) {
+    case 'backspace':
+      txt.value = txt.value.substring(0,txt.value.length-1);
+       datatable.fnFilter(txt.value).draw();
+      return;
+    case 'Whitespace':
+      txt.value+= " ";
+       datatable.fnFilter(txt.value).draw();
+      return;
+    case 'clear':
+      txt.value = "";
+       datatable.fnFilter(txt.value).draw();
+      return;
+    case 'num':
+      showNumericKeypad();
+      return;
+    case 'slash':
+      txt.value+= "/";
+       datatable.fnFilter(txt.value).draw();
+      return;
+    case 'dash':
+      txt.value+= "-";
+       datatable.fnFilter(txt.value).draw();
+      return;
+    case 'abc':
+      showAlphaKeypad();
+      return
+  }
+  
+  txt.value+= pressedChar;
+  datatable.fnFilter(txt.value).draw();
+}
+
+function showNumericKeypad(){
+  document.getElementById("keypad").style.height = "145";
+  keyboard.innerHTML = getButtons("123");
+  keyboard.innerHTML+= getButtons("456");
+  keyboard.innerHTML+= getButtons("7890");
+  keyboard.innerHTML+= getButtonString('space','<span>Space</span>');
+  keyboard.innerHTML+= getButtonString('clear','<span>Clear</span>');
+  keyboard.innerHTML+= getButtonString('backspace','<span>Bksp</span>');
+  keyboard.innerHTML+= getButtonString('abc','<span>abc</span>');
+  keyboard.innerHTML+= getButtonString('dash','<span>-</span>');
+  keyboard.innerHTML+= getButtonString('slash','<span>/</span>');
+}
+
+function showAlphaKeypad(){
+  document.getElementById("keypad").style.height = "290 !important";  
+  keyboard.innerHTML= getButtons("0123456789") + "</br>";
+  keyboard.innerHTML+= getButtons("QWERTYUIOP") + "</br>";
+  keyboard.innerHTML+= getButtons("ASDFGHJKL:") + "</br>";
+  keyboard.innerHTML+= getButtons("ZXCVBNM,.?");
+  keyboard.innerHTML+= getButtonString('backspace','<span>Bksp</span>');
+  keyboard.innerHTML+= getButtonString('Space','<span>Space</span>');
+  keyboard.innerHTML+= getButtonString('clear','<span>Clear</span>');
+}
+
+
+</script>
+
+
+<script type="text/css">
+  #keypad{
+    background-color: #FFFFFF;
+    border: 2px solid darkslategray;
+    border-radius: 15px 15px 15px 15px;
+    display: none;
+    height: 45%;
+    padding: 2.5%;
+    position: absolute;
+    right: 6%;
+    top: 11%;
+    width: 47%;
+    opacity: 10;
+}
+
+#backspace{
+  position:absolute;
+  left:6%;
+  bottom:2%;
+}
+
+
+#Whitespace{
+  position:absolute;
+  left:20%;
+  bottom:2%;
+  width:50%;
+}
+
+#clear{
+   position:absolute;
+  left:75%;
+  bottom:2%;
+}
+
+.keyboardButton{		
+    width: 10%;
+    height: 18%;
+}
+
+
+.button:hover {background-color: #3e8e41}
+
+.button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);	
+
+
 </script>
