@@ -2,7 +2,8 @@ require 'order_service.rb'
 
 class OrderController < ApplicationController
 
-
+    $result_values = []
+    $selected_measure = []
     def requested_orders
         npid = params[:identifier]
         res = OrderService.retrieve_requested_orders(npid)
@@ -13,7 +14,7 @@ class OrderController < ApplicationController
             @gender         = session[:patient][4]
             @address        = ""
             @tests          = res[0]
-           
+  
             render :layout => false
     end
 
@@ -35,7 +36,7 @@ class OrderController < ApplicationController
         if res != false
             @data = res
         end
- 
+        $selected_measure = []
         render :layout => false
     end
 
@@ -106,34 +107,52 @@ class OrderController < ApplicationController
         @tracking_number = params[:tracking_number]
         @identifier = params[:identifier]
         
+        
         res = OrderService.query_test_measures(@test_name)
         if res != false
             @data = res
+            $selected_measure.each do |r|
+                @data.delete(r)
+            end
         end
     
     end
 
     def test_result_entry_confirmation
-        
+      
+        @measure_name = params[:measure]
+        @result_value = params[:result][:result_value]
+        @tracking_number = params[:tracking_number]
+        @test_name = params[:test_name]
+        @identifier = params[:identifier]
+
+        values = {}
+        values[@measure_name] = @result_value
+        $selected_measure.push(@measure_name)
+        $result_values.push([@tracking_number,@test_name,values])
+     
         render :layout => false
     end
 
+
+
     def save_result
-        results = params[:data].to_unsafe_h   
-        tracking_number = params[:tracking_number]
-        test_name = params[:test_name]   
-        test_name = test_name.gsub("AND","&")
-       
-        
+        #results = params[:data].to_unsafe_h   
+        #tracking_number = params[:tracking_number]
+        #test_name = params[:test_name]   
+        #test_name = test_name.gsub("AND","&")
+               
         who_updated = {
                     'id_number': '',
                     'phone_number': '',
                     'first_name': '',
                     'last_name': ''
         }
-          
-        res = OrderService.save_results(tracking_number,test_name,results,who_updated)
-        render plain: res[0].to_json and return
+        $result_values.each do |r|
+            res = OrderService.save_results(r[0],r[1],r[2],who_updated)
+        end
+        $selected_measure = []
+        render plain: true and return
     end
 
     def save_order

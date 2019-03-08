@@ -83,20 +83,20 @@
                                 </div>
                               
                             </div>
-                            <div class="block-content collapse in" style="padding-left:3%;padding-right:3%;padding-top:0%;width:50%;margin-left:19%">
-                                <table id="details" class="table table-striped" >
+                            <div class="block-content collapse in" style="padding-left:3%;padding-right:3%;padding-top:4%;width:35%;margin-left:26%">
+                                <table id="details" class="table table-striped" style="color:black;">
                                     <thead>
                                         <tr> 
-                                            <th>Test Name </th>
-                                            <th>Viral Load</th>
+                                            <th style="text-align: right;color:black">Test Name </th>
+                                            <th style="border-left: thin solid grey;">  <%=  @test_name %> </th>
                                         </tr>
                                         <tr>
-                                            <th>Test Measure</th>                                        
-                                            <th>Viral Load</th>
+                                            <th style="text-align: right;color:black">Test Measure</th>                                        
+                                            <th style="border-left: thin solid grey;"> <%=  @measure_name %> </th>
                                         </tr>
                                         <tr>
-                                            <th>Test Result</th>
-                                            <th>< 1000</th>
+                                            <th style="text-align: right;color:black">Test Result</th>
+                                            <th style="border-left: thin solid grey;"> <%=  @result_value %></th>
                                         </tr>
                                     
                                     </thead>    
@@ -104,10 +104,11 @@
                                         
                                     </tbody>
                                 </table>
-                            </div>
-
-                            
+                               
+                            </div>                            
                         </div>
+                        <hr/  style="border: thin solid black;">
+
                         <!-- /block -->
                     </div>
                     <div id="keypad">
@@ -119,14 +120,14 @@
                 <div id="footer" class="dark">
                     <div id="buttons" class="buttons" style="top:0px">
                     <button  id="orderTests" class="green right" 
-                        onclick="window.location='/order/order_test?identifier=<%= @national_id %>&name=<%= @name %>&gender=<%= @gender %>&dob=<%= @dob %>&address=<%= @address %>'">
+                        onclick="saveResults()">
                             <span>Finish</span>
                     </button>
                     <button  id="orderTests" class="blue right" >                     
                             <span>Edit Result </span>
                     </button>
                     <button  id="orderTests" class="blue right"           
-                        onclick="window.location='/order/enter_result_value?tracking_number=XQCH192K006&test_name=Differential&identifier=P115300000033'">
+                        onclick="window.location='/order/enter_result_value?tracking_number=' + '<%= @tracking_number %>' + '&test_name=' + '<%= @test_name %>' + '&identifier=' + '<%= @identifier %>'">
                             <span>Next Result </span>
                     </button>
                             
@@ -145,6 +146,24 @@
 
     function WrongPatient() {
         window.location = "/user/index";
+    }
+
+    function saveResults()
+    {
+        var url = "/order/save_results"
+        jQuery.ajax({
+            url: url,
+            async: false,
+            success: function(res)
+            {
+                console.log(res);
+                window.location='/order/enter_result?identifier=' + '<%= @identifier %>'
+            },
+            error: function(err)
+            {
+                console.log(err);
+            }
+        })
     }
 
 </script>

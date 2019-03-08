@@ -198,7 +198,7 @@
                                             <tr>
                                                 <td> <%= test['tracking_number']%> </td>
                                                 <td> <%= test['specimen_type']%> </td>
-                                                <td> <%= test['date_created'].to_date() %> </td>
+                                                <td> <%= test['date_created'].to_time.strftime("%d-%b-%Y %H:%M") %> </td>
                                                 <td> <%= test['requested_by']%> </td>
                                                 <td> <%= test['tests'].join(',') %> </td>
                                                 <td>

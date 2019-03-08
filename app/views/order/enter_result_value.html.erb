@@ -29,7 +29,9 @@ function set_ajaxURL_for_suggestions(url, filter_value) {
 
 <%= form_tag("/order/test_result_entry_confirmation", id: "create-form", method: 'post', enctype: 'multipart/form-data') do %>
 
-<input type="hidden" name="identifier" value="<%= params[:identifier]%>" />
+<input type="hidden" name="tracking_number" value="<%= params[:tracking_number]%>" />
+<input type="hidden" name="test_name" value="<%= params[:test_name].gsub("**","&") %>" />
+<input type="hidden" name="identifier" value="<%= params[:identifier] %>" />
 
 <%= select_tag "measure", options_for_select(@data),
            {:helpText => 'Select Test Measure',
@@ -38,7 +40,7 @@ function set_ajaxURL_for_suggestions(url, filter_value) {
             :tt_onLoad => "__$('nextButton').style.display = 'none';__$('keyboard').style.display = 'none"
            }%>
 
-<%= text_field(:order, :requesting_clinician, :helpText=> "Enter Result Value", 
+<%= text_field(:result,:result_value, :helpText=> "Enter Result Value", 
            :textCase => "lower",
            :tt_onLoad => "__$('keyboard').style.display = 'block'")%><br>
 

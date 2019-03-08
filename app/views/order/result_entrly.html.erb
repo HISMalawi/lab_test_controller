@@ -107,11 +107,7 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/dashboard.css"/>
         <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"/>
         <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap-responsive.css"/>
-        <link rel="stylesheet" type="text/css" href="/stylesheets/edrs.css"/>
-
-        <%= stylesheet_link_tag "datatable/css/dataTables.bootstrap.min" %>
-        <%= javascript_include_tag "datatable/js/jquery.dataTables.min" %>
-        <%= javascript_include_tag "datatable/js/dataTables.bootstrap.min" %>
+        
         <style type="text/css">
             #barcode {
                 background:transparent none repeat scroll 0 0;
@@ -180,11 +176,11 @@
                                     <span style="float:right;font-weight: bold;color:white;font-size: 1.3em;">Patient Name:  <span style="float:right;margin-left:6px;color:white"> Gift Malolo</span> </span>
                                 </div>
                             </div>
-                            <div class="block-content collapse in" style="padding-left:3%;padding-right:3%;border: thin solid darkslategray;padding-top:1%;">
-                                <table id="details" class="table table-striped" style="border:thin solid darkslategray">
+                            <div class="block-content collapse in" style="padding-left:3%;padding-right:3%;padding-top:0%;">
+                                <table id="details" class="table table-striped" style="">
                                     <thead>
                                         <tr> 
-                                            <th>Test Name </th>
+                                            <th style="font-weight:bold;">Test Name </th>
                                             <th>Status</th>
                                             <th>Date Ordered </th>
                                         </tr>
@@ -199,9 +195,15 @@
                                                 <tr onclick="window.location='/order/enter_result_value?tracking_number=' + '<%= tracking_number %>' + '&test_name=' + '<%= test_name %>' + '&identifier=' + '<%= @identifier %>'">
                                                     <td> <%= d['test_name'] %> </td>
                                                     <td> <%= d['status'] %> </td>
-                                                    <td> <%= d['created_at'] %> </td>                                       
+                                                    <td> <%= d['created_at'].to_time.strftime("%d-%b-%Y %H:%M") %> </td>                                       
                                                 </tr>
                                             <% end %>
+                                        <% else %>
+                                            <tr> 
+                                                <td colspan='3'>    
+                                                    <h4 style="color:red"> No Tests Without Results </h4>
+                                                </td>
+                                            </tr>
                                         <% end %>
                                     </tbody>
                                 </table>
@@ -232,7 +234,7 @@
 
 
 <script type="text/javascript">
-    $("#details").dataTable();
+    #$("#details").dataTable();
 
 	var datatable = $("#rst").dataTable();
     var elms = document.getElementById("details_filtert").getElementsByTagName("*");
