@@ -21,7 +21,14 @@ Rails.application.routes.draw do
   post '/patient/select'                   => 'patient#select'
   get  '/patient/select'                   => 'patient#select'
   get '/patient/search_patient'            => 'patient#search_patient'
+  post '/patient/search_patient'            => 'patient#search_patient'
   get '/order/enter_result_value'          => 'order#enter_result_value'
-  get '/order/save_results'                 => 'order#save_result'
+  get '/order/save_results'                => 'order#save_result'
+  get '/patient/search_by_name'            => 'patient#search_by_name'
+  get '/patient/search_by_name_results'    => 'patient#search_by_name_results'
+  post '/patient/set_patient_in_session'   => 'patient#set_patient_in_session'
+  get '/patient/set_patient_in_session'    => 'patient#set_patient_in_session'
+  post '/order/test_result_entry_confirmation'                 => 'order#test_result_entry_confirmation'
+  get '/order/test_result_entry_confirmation'                 => 'order#test_result_entry_confirmation'
 
 end

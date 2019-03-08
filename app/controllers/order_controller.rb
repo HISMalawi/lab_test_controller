@@ -111,6 +111,10 @@ class OrderController < ApplicationController
             @data = res
         end
     
+    end
+
+    def test_result_entry_confirmation
+        
         render :layout => false
     end
 

@@ -30,6 +30,7 @@ class UserController < ApplicationController
             s_name = status[1]['authorization']['user']['person']['names'][0]['family_name']
             
             session['user'] = [token,user_id,f_name,s_name]
+            
             redirect_to '/user/index'
         else
             if status[1].message == "401 Unauthorized"
