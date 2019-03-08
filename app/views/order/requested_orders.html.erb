@@ -274,7 +274,7 @@
                         <% config = YAML.load_file("#{Rails.root}/config/application.yml") %>
                        
                         
-                      <button id="cancel" class="red left" onclick="WrongPatient()"><span>Scan Again</span></button>
+                      <button id="cancel" class="red left" onclick="WrongPatient()"><span>Search Again</span></button>
                        <% if config['permit_results_entry'] == true %> 
                             <button  id="orderTests" class="green right" 
                                 onclick="window.location='/order/enter_result?identifier=<%= @national_id %>'">
