@@ -7,6 +7,10 @@ class UserController < ApplicationController
         if params[:patient_not_found] == 'yes'
             @patient_not_found = ""
         end
+        config = YAML.load_file("#{Rails.root}/config/app_getway.yml")
+
+        @portal_ip = "#{config['protocol']}://#{config['host']}:#{config['port']}" 
+    
         render :layout => false
     end
 
