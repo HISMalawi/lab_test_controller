@@ -179,7 +179,7 @@
                                     <span style='font-weight: bold;font-size: 1.5em; color: white'>Lab Orders</span>
                                 </div>
                             </div>
-                            <div class="block-content collapse in">
+                            <div class="block-content collapse in" style="height:550px;overflow:auto;">
                                 <table id="details" class="table table-striped">
                                     <thead>
                                         <tr> 
@@ -198,7 +198,7 @@
                                             <tr>
                                                 <td> <%= test['tracking_number']%> </td>
                                                 <td> <%= test['specimen_type']%> </td>
-                                                <td> <%= test['date_created'].to_date() %> </td>
+                                                <td> <%= test['date_created'].to_time.strftime("%d-%b-%Y %H:%M") %> </td>
                                                 <td> <%= test['requested_by']%> </td>
                                                 <td> <%= test['tests'].join(',') %> </td>
                                                 <td>
@@ -268,16 +268,32 @@
               
                 <div id="footer" class="dark">
                     <div id="buttons" class="buttons" style="top:0px">
-                      <button id="continue" class="green right" onclick="correctPatient()" style="display: none"><span>Order Tests</span></button>
-                    
-                      <button  id="orderTests" class="blue right" 
-                      onclick="window.location='/order/order_test?identifier=<%= @national_id %>&name=<%= @name %>&gender=<%= @gender %>&dob=<%= @dob %>&address=<%= @address %>'">
-                            <span>Order Tests</span>
-                      </button>
-                      <button id="cancel" class="red left" onclick="WrongPatient()"><span>Scan Again</span></button>
+                        <button id="continue" class="green right" onclick="correctPatient()" style="display: none"><span>Order Tests</span></button>
+                        
+                       
+                        <% config = YAML.load_file("#{Rails.root}/config/application.yml") %>
+                       
+                        
+                      <button id="cancel" class="red left" onclick="WrongPatient()"><span>Search Again</span></button>
+                       <% if config['permit_results_entry'] == true %> 
+                            <button  id="orderTests" class="green right" 
+                                onclick="window.location='/order/enter_result?identifier=<%= @national_id %>'">
+                                    <span>Enter Results</span>
+                            </button>
+                        <% end %>
+                        <button  id="orderTests" class="blue right" 
+                            onclick="window.location='/order/order_test?identifier=<%= @national_id %>&name=<%= @name %>&gender=<%= @gender %>&dob=<%= @dob %>&address=<%= @address %>'">
+                                <span>Order Tests</span>
+                        </button>
+                        <button  id="orderTests" class="blue right" 
+                            <% first_name = @name.split(" ")[0] %>
+                            <% last_name = @name.split(" ")[1] %>
+                            onclick="window.location='/patient/search_by_name_results?first_name=<%= first_name %>&last_name=<%= last_name %>&gender=<%= @gender %>'">
+                                <span>Back </span>
+                        </button>
                     </div>
                 </div>
             </div> 
         </div>
     </body>
-</html>
+</html> 

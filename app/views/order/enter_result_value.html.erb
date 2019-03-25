@@ -1,0 +1,49 @@
+
+<style>
+
+li {
+    color: black;
+    font-family: "Nimbus Sans L","Arial Narrow",sans-serif;
+    font-size: 1.5em;
+    list-style: outside none none;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+</style>
+
+
+
+<script>
+var tt_cancel_destination = "/order/requested_orders?identifier=" + '<%= params[:identifier] %>';
+
+
+function set_ajaxURL_for_suggestions(url, filter_value) {
+    $('touchscreenInput'+tstCurrentPage).setAttribute('ajaxURL', url + filter_value + "&search_string=");
+    listSuggestions(tstCurrentPage);
+}
+
+</script>
+
+
+<%= form_tag("/order/test_result_entry_confirmation", id: "create-form", method: 'post', enctype: 'multipart/form-data') do %>
+
+<input type="hidden" name="tracking_number" value="<%= params[:tracking_number]%>" />
+<input type="hidden" name="test_name" value="<%= params[:test_name].gsub("**","&") %>" />
+<input type="hidden" name="identifier" value="<%= params[:identifier] %>" />
+
+<%= select_tag "measure", options_for_select(@data),
+           {:helpText => 'Select Test Measure',
+            :id => "measure_name",
+            :tt_requireNextClick => false,
+            :tt_onLoad => "__$('nextButton').style.display = 'none';__$('keyboard').style.display = 'none"
+           }%>
+
+<%= text_field(:result,:result_value, :helpText=> "Enter Result Value", 
+           :textCase => "lower",
+           :tt_onLoad => "__$('keyboard').style.display = 'block'")%><br>
+
+
+<% end %>
+

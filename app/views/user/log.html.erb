@@ -1,4 +1,9 @@
 
+<%  config = YAML.load_file("#{Rails.root}/config/app_getway.yml") %>
+
+<% portal_ip = "#{config['protocol']}://#{config['host']}:#{config['port']}" 
+
+%>
 <%= form_tag("/user/authenticate", id: "login_form", method: 'get', enctype: 'multipart/form-data') do %>
 
 
@@ -11,3 +16,7 @@
 	    :field_type => "password")%><br>
 
 <%end%>
+
+<script type="text/javascript">
+	var tt_cancel_destination = '<%= portal_ip %>';
+</script>

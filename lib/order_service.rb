@@ -25,6 +25,32 @@ module OrderService
         return [tests]
     end
 
+    def self.get_tests_with_no_results(npid)
+        configs = YAML.load_file "#{Rails.root}/config/nlims_service.yml"
+        host = configs['host']
+        prefix = configs['prefix']
+        port = configs['port']
+        protocol = configs['protocol']
+       
+        _token = File.read("#{Rails.root}/tmp/token")
+        tests  = ""
+        headers = {
+            content_type: "application/json",
+            token: _token
+        }
+
+        url = "#{protocol}://#{host}:#{port}#{prefix}query_tests_with_no_results_by_npid/#{npid}"
+        res = JSON.parse(RestClient.get(url,headers))
+        
+        if res['error'] == false
+            tests = res['data']
+        else
+            return false
+        end 
+       
+        return tests      
+    end
+
     def self.update_order_confirmation(tracking_number,specimen_type,target_lab)
         configs = YAML.load_file "#{Rails.root}/config/nlims_service.yml"
         host = configs['host']
@@ -195,9 +221,9 @@ module OrderService
     end
 
     def self.save_order(order_location,specimen_type,tests,priority,target_lab,requesting_clinician,session,patient,identifier)
-        
+       
         settings = YAML.load_file "#{Rails.root}/config/application.yml"
-        configs = YAML.load_file "#{Rails.root}/config/emr_service.yml"
+        config = YAML.load_file "#{Rails.root}/config/emr_service.yml"
         configs = YAML.load_file "#{Rails.root}/config/nlims_service.yml"
 
         host = configs['host']
@@ -206,20 +232,6 @@ module OrderService
         protocol = configs['protocol']
         
         _token = File.read("#{Rails.root}/tmp/token")
-       # headers = {
-       #     content_type: 'application/json',
-       #     Authorization: session[3]
-       # }
-
-        #data = {
-        #        "specimen_type": specimen_type,
-        #       "test_types": tests,
-        #        "encounter_id": 6713247,
-        #        "reason": priority,
-        #       "target_lab": target_lab,
-        #        "requesting_clinician": requesting_clinician
-        #    }
-
         
                 headers = {
                     content_type: 'application/json',
@@ -258,11 +270,95 @@ module OrderService
        
         #url = "#{protocol}://#{host}:#{port}#{prefix}programs/1/lab_tests/orders"
         #res = JSON.parse(RestClient.post(url,data,headers))
-        
-        return [true, res['data']['tracking_number']]
-        #return [true, res['lims_order']['tracking_number']] if !res['lims_order'].blank? 
-        #return [false,''] if res['error'] == true
+            if res['error'] == false
+                #host = configs['host']
+                #prefix = configs['prefix']
+                #port = configs['port']
+                #protocol = configs['protocol']
+                #headers = {
+                #    content_type: 'application/json',
+                #    Authorization: session[3]
+                #}
 
+                #data = {
+                #    "tracking_number" =>  res['data']['tracking_number'],
+                #    "patient_id"      => patient[0],
+                #    "ordered_by"      => { "first_name" => session[1], "last_name" => session[2] , "id" => session[0]
+                #    }
+                #}
+                #url = "#{protocol}://#{host}:#{port}#{prefix}programs/1/lab_tests/orders"
+                #res = JSON.parse(RestClient.post(url,data,headers))
+                #
+                return [true, res['data']['tracking_number']]
+            else
+                return [false,""]
+            end           
+        
+    end
+
+
+
+    def self.save_results(tracking_number_,test_name_,results_,who_updated)
+        configs = YAML.load_file "#{Rails.root}/config/nlims_service.yml"
+        host = configs['host']
+        prefix = configs['prefix']
+        port = configs['port']
+        protocol = configs['protocol']
+
+        _token = File.read("#{Rails.root}/tmp/token")
+        headers = {
+            content_type: 'application/json',
+            token: _token
+        }
+        
+        data = {
+                :tracking_number => tracking_number_,
+                :test_status => 'verified',
+                :test_name => test_name_,     
+                :who_updated => {
+                        'id_number': '1',
+                        'phone_number': '2939393',
+                        'first_name': 'gibo',
+                        'last_name': 'malolo'
+                },
+                :results => results_
+        }
+
+        url = "#{protocol}://#{host}:#{port}#{prefix}update_test"
+        res = JSON.parse(RestClient.post(url,data,headers))
+       
+        if res['error'] == false
+            return [true, res['message']]
+        else
+            return [false,res['message']]
+        end
+
+    end
+
+
+    def self.query_test_measures(test_name)
+        test_name = test_name.gsub(" ","_")
+        configs = YAML.load_file "#{Rails.root}/config/nlims_service.yml"
+        host = configs['host']
+        prefix = configs['prefix']
+        port = configs['port']
+        protocol = configs['protocol']
+
+        _token = File.read("#{Rails.root}/tmp/token")
+
+        headers = {
+            content_type: 'application/json',
+            token: _token
+        }
+
+        url = "#{protocol}://#{host}:#{port}#{prefix}query_test_measures/#{test_name}"
+        res = JSON.parse(RestClient.get(url,headers))
+
+        if res['error'] == false
+            return res['data']
+        else
+            return false
+        end
     end
 
     def self.retrieve_order_location
