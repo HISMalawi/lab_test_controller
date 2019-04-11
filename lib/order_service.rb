@@ -125,6 +125,16 @@ module OrderService
         return s
     end
 
+    def self.re_print_tracking_number(tracking_number,collector)
+        require 'auto12epl'
+        data = OrderService.retrieve_patient_info(tracking_number,collector)
+        
+        auto = Auto12Epl.new
+        s =  auto.generate_epl(data[0].to_s, data[1].to_s, data[2].to_s, data[3].to_s, data[4], data[5].to_s,
+                               data[6].to_s, data[7], data[8].to_s, data[9].to_s,
+                               data[10], data[11].to_s, data[12])
+        return s
+    end
 
     def self.retrieve_patient_info(tracking_number,collector)
         configs = YAML.load_file "#{Rails.root}/config/nlims_service.yml"

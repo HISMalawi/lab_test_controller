@@ -66,6 +66,18 @@ class OrderController < ApplicationController
                   :disposition => "inline")
         
     end     
+
+    def re_print_tracking_number
+        tracking_number = params[:tracking_number]
+
+        s = OrderService.re_print_tracking_number(tracking_number,session[:user][2].to_s[0,1] + " " + session[:user][3])
+        send_data(s,
+                  :type=>"application/label; charset=utf-8",
+                  :stream=> false,
+                  :filename=>"#{params[:tracking_number]}-#{rand(10000)}.lbl",
+                  :disposition => "inline")
+        
+    end
     
     def pull_requested_orders
         npid = params[:identifier]

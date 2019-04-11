@@ -35,5 +35,6 @@ Rails.application.routes.draw do
   post '/order/save_edited_result'         => 'order#save_edited_result'
   get '/patient/search_by_arv_number'      => 'patient#search_by_arv_number'
   get "/order/pull_requested_orders"       => 'order#pull_requested_orders'
+  get "/order/re_print_tracking_number"    => 'order#re_print_tracking_number'
 
 end

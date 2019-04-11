@@ -256,6 +256,8 @@
     var tt_url;
     var identifier = url.searchParams.get("identifier");
     var url = "/order/pull_requested_orders?identifier=" + identifier;
+    var reprint_url;
+
     
     function getRequestOrders(){       
         jQuery.ajax({
@@ -315,7 +317,7 @@
                 tt_url = "/order/order_test?identifier=" + identifier;
                 console.log(btnOrder);
                 btnOrder.setAttribute("onmousedown", "orderPressed()");
-                
+                var tracking_number;
 
                 for (var i = 0; i < tests.length;i ++){
                     
@@ -323,7 +325,7 @@
                     var sampleType = tests[i]['specimen_type'];
                     var orderDate =  tests[i]['date_created'];
                     var requestedBy =  tests[i]['requested_by'];
-                    var test =  tests[i]['tests'].join("<br />");
+                    var test =  tests[i]['tests'].join("");
 
                     var tr = document.createElement("tr");
                     tRows.appendChild(tr);
@@ -348,9 +350,15 @@
                     tr.appendChild(td);
 
                     var td = document.createElement("td");
-                    var bt = document.createElement("button");
-                    td.innerHTML =  bt;
+                    var bt = document.createElement("input");
+                    bt.value = "reprint";
+                    bt.setAttribute("type","button");
+                    bt.setAttribute("class","btn btn-primary");
+                    bt.setAttribute("id",tracking_number)
+                    bt.setAttribute("onmousedown","reprint(this.id)");
+                    td.appendChild(bt);
                     tr.appendChild(td);
+                    tracking_numner = "";
                 }
                 
             },
@@ -362,6 +370,11 @@
 
     function orderPressed(){
         location = tt_url;
+    }
+
+    function reprint(tracking_number){
+        window.location = "/order/re_print_tracking_number?tracking_number=" + tracking_number;
+
     }
 
     getRequestOrders();
