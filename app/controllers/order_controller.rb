@@ -70,6 +70,7 @@ class OrderController < ApplicationController
     def pull_requested_orders
         npid = params[:identifier]
         res = OrderService.retrieve_requested_orders(npid)
+        d = ""
         data = {
             :national_id    => npid,
             :name           => session[:patient][1].to_s + " " + session[:patient][2].to_s,
