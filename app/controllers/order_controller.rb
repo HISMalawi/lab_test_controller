@@ -28,6 +28,7 @@ class OrderController < ApplicationController
         end
     end
 
+  
     def result_entrly
         @identifier = params[:identifier]
         res = OrderService.get_tests_with_no_results(@identifier)
@@ -65,8 +66,8 @@ class OrderController < ApplicationController
 
     def print_tracking_number
         require 'auto12epl'
-       
-        s = OrderService.print_tracking_number(params[:tracking_number],session[:user][2].to_s[0,1] + " " + session[:user][3])
+        
+        s = OrderService.print_tracking_number(params[:tracking_number],session[:user][2].to_s[0,1] + " " + session[:user][3],session[:patient],params[:priority], session[:selected_tests])
         send_data(s,
                   :type=>"application/label; charset=utf-8",
                   :stream=> false,
@@ -118,18 +119,61 @@ class OrderController < ApplicationController
     
     end
 
-    def test_result_entry_confirmation
-      
-        @measure_name = params[:measure]
-        @result_value = params[:result][:result_value]
+    def edit_result
+        @measure_name = params[:measure_name]
+        @identifier = params[:identifier]
+        @rst_value = params[:result]
+        counter = 0
         @tracking_number = params[:tracking_number]
+        @test_name = params[:test_name]       
+        $result_values.each do |r|            
+            measure = r[2].keys[0]        
+            if measure == @measure_name                    
+                $result_values.delete_at(counter)               
+            end
+            counter = counter + 1
+        end
+    end
+
+    def save_edited_result
+        @measure_name = params[:measure_name]
+        @result_value = params[:result][:result_value]
         @test_name = params[:test_name]
+        @tracking_number = params[:tracking_number]
         @identifier = params[:identifier]
 
         values = {}
         values[@measure_name] = @result_value
-        $selected_measure.push(@measure_name)
         $result_values.push([@tracking_number,@test_name,values])
+       
+        redirect_to "/order/test_result_entry_confirmation?option=edit"+ "&identifier=" + @identifier +"&tracking_number=" + @tracking_number + "&test_name=" + @test_name + "&result_value=" + @result_value + "&measure_name=" + @measure_name
+    end
+
+    def test_result_entry_confirmation
+        if params[:option] == 'edit'
+
+            @measure_name = params[:measure_name]
+            @result_value = params[:result_value]
+            @tracking_number = params[:tracking_number]
+            @test_name = params[:test_name]
+            @identifier = params[:identifier]
+
+            values = {}
+            values[@measure_name] = @result_value
+            $selected_measure.push(@measure_name)
+            $result_values.push([@tracking_number,@test_name,values])
+        else
+            @measure_name = params[:measure]
+            @result_value = params[:result][:result_value]
+            @tracking_number = params[:tracking_number]
+            @test_name = params[:test_name]
+            @identifier = params[:identifier]
+
+            values = {}
+            values[@measure_name] = @result_value
+            $selected_measure.push(@measure_name)
+            $result_values.push([@tracking_number,@test_name,values])
+        end
      
         render :layout => false
     end
@@ -152,6 +196,7 @@ class OrderController < ApplicationController
             res = OrderService.save_results(r[0],r[1],r[2],who_updated)
         end
         $selected_measure = []
+        $result_values = []
         render plain: true and return
     end
 
@@ -166,6 +211,7 @@ class OrderController < ApplicationController
         priority = params[:priority]
         requesting_clinician = params[:order]['requesting_clinician']
         tracking_number = ''
+        session['selected_tests'] =  tests
         t_n = []
         if add_test == 'No'
             tests.each do |t|
@@ -183,7 +229,7 @@ class OrderController < ApplicationController
                 end
         end
 
-        print_url = "/order/print_tracking_number?tracking_number=#{tracking_number}"
+        print_url = "/order/print_tracking_number?tracking_number=#{tracking_number}&priority=#{priority}"
         print_and_redirect(print_url, "/order/requested_orders?identifier=#{identifier}")
     end
 
