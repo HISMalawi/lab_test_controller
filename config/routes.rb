@@ -8,7 +8,6 @@ Rails.application.routes.draw do
   get '/user/authenticate'                 => 'user#authentication'
   get '/patient/confirm'                   => 'patient#confirm'
   get '/order/requested_orders'            => 'order#requested_orders'
-  get '/order/check'                       => 'order#check'
   get '/order/update_order_status'         => 'order#update_order_status'
   get '/order/print_tracking_number'       => 'order#print_tracking_number'
   get '/order/test_types'                  => 'order#select_test_types'
@@ -34,6 +33,5 @@ Rails.application.routes.draw do
   get '/order/edit_result'                 => 'order#edit_result'
   post '/order/save_edited_result'         => 'order#save_edited_result'
   get '/patient/search_by_arv_number'      => 'patient#search_by_arv_number'
-
 
 end

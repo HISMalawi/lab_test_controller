@@ -230,14 +230,8 @@ class OrderController < ApplicationController
         end
 
         print_url = "/order/print_tracking_number?tracking_number=#{tracking_number}&priority=#{priority}"
-        print_and_redirect(print_url, "/order/check?identifier=#{identifier}")
+        print_and_redirect(print_url, "/order/requested_orders?identifier=#{identifier}")
     end
-    
-    def check
-        
-
-    end
-
 
     def select_test_types
         specimen_type_ = params[:specimen_type]
