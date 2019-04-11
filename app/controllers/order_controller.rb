@@ -5,16 +5,7 @@ class OrderController < ApplicationController
     $result_values = []
     $selected_measure = []
     def requested_orders
-        npid = params[:identifier]
-        res = OrderService.retrieve_requested_orders(npid)
        
-            @national_id    = npid
-            @name           = session[:patient][1].to_s + " " + session[:patient][2].to_s
-            @dob            = session[:patient][3]
-            @gender         = session[:patient][4]
-            @address        = ""
-            @tests          = res[0]
-  
             render :layout => false
     end
 
@@ -76,6 +67,20 @@ class OrderController < ApplicationController
         
     end     
     
+    def pull_requested_orders
+        npid = params[:identifier]
+        res = OrderService.retrieve_requested_orders(npid)
+        data = {
+            :national_id    => npid,
+            :name           => session[:patient][1].to_s + " " + session[:patient][2].to_s,
+            :dob            => session[:patient][3],
+            :gender         => session[:patient][4],
+            :address        => "",
+            :tests          => res[0]
+        }
+        
+        render json: data 
+    end
 
     def pr(tr)
         require 'auto12epl'
