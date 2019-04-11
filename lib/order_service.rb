@@ -115,15 +115,13 @@ module OrderService
         return [status,reprint]
     end
 
-    def self.print_tracking_number(tracking_number,collector)
+    def self.print_tracking_number(tracking_number,collector,patient,priority,test)
         require 'auto12epl'
-
-        data = OrderService.retrieve_patient_info(tracking_number,collector)
-        
+        test = test[0]
         auto = Auto12Epl.new
-        s =  auto.generate_epl(data[0].to_s, data[1].to_s, data[2].to_s, data[3].to_s, data[4], data[5].to_s,
-                               data[6].to_s, data[7], data[8].to_s, data[9].to_s,
-                               data[10], data[11].to_s, data[12])
+        s =  auto.generate_epl(patient[1].to_s, patient[2].to_s, patient[0].to_s, patient[3].to_s, "", patient[4].to_s,
+                               "", collector, '', test,
+                               priority, tracking_number.to_s, tracking_number)
         return s
     end
 
@@ -295,7 +293,6 @@ module OrderService
             end           
         
     end
-
 
 
     def self.save_results(tracking_number_,test_name_,results_,who_updated)
