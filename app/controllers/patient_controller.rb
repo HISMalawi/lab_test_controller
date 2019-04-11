@@ -40,7 +40,8 @@ class PatientController < ApplicationController
         first_name = params[:first_name]
         last_name = params[:last_name]
         gender = params[:gender]
-        @found_patients = []
+
+	@found_patients = []
         identifier = ""
         if params[:option] == "by_identifier"
             ident = params[:identifier]
@@ -63,7 +64,7 @@ class PatientController < ApplicationController
 
             end
         else
-            res = PatientService.search_patient_by_name(first_name,last_name,gender,session[:user][0])       
+	     res = PatientService.search_patient_by_name(first_name,last_name,gender,session[:user][0])       
 
             if res[0] == true
                 res[1].each do |data|

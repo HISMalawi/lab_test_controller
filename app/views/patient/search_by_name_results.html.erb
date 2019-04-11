@@ -142,7 +142,8 @@
 <script>
 
     function setPatient(patient_id,id,first_name,last_name,gender,birthdata)
-    { 
+    {   first_name = first_name.replace("'"," ");
+        last_name = last_name.replace("'"," ");
         var url = '/patient/set_patient_in_session?id=' + id +"&first_name=" + first_name + "&last_name=" + last_name +"&birthdata=" + birthdata +"&gender=" + gender + "&patient_id=" + patient_id;
         jQuery.ajax({
             async: false,
