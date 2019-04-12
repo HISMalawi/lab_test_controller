@@ -326,7 +326,8 @@
                     var orderDate =  tests[i]['date_created'];
                     var requestedBy =  tests[i]['requested_by'];
                     var test =  tests[i]['tests'].join("");
-
+                    orderDate = new Date(orderDate);
+                    orderDate = orderDate.getFullYear() +"-" + orderDate.getMonth() +"-"+ orderDate.getDate() +" "+ orderDate.getHours() +":"+orderDate.getMinutes() +":"+orderDate.getSeconds()
                     var tr = document.createElement("tr");
                     tRows.appendChild(tr);
                     var td = document.createElement("td");
@@ -349,16 +350,28 @@
                     td.innerHTML =  test;
                     tr.appendChild(td);
 
-                    var td = document.createElement("td");
-                    var bt = document.createElement("input");
-                    bt.value = "reprint";
-                    bt.setAttribute("type","button");
-                    bt.setAttribute("class","btn btn-primary");
-                    bt.setAttribute("id",tracking_number)
-                    bt.setAttribute("onmousedown","reprint(this.id)");
-                    td.appendChild(bt);
-                    tr.appendChild(td);
-                    tracking_numner = "";
+                    if (sampleType == "not-assigned"){
+                        var td = document.createElement("td");
+                        var bt = document.createElement("input");
+                        bt.value = "collect sample";
+                        bt.setAttribute("type","button");
+                        bt.setAttribute("class","btn btn-success");
+                        bt.setAttribute("id",tracking_number +"--"+test)
+                        bt.setAttribute("onmousedown","assignTest(this.id)");
+                        td.appendChild(bt);
+                        tr.appendChild(td);
+                    }else{
+                        var td = document.createElement("td");
+                        var bt = document.createElement("input");
+                        bt.value = "reprint";
+                        bt.setAttribute("type","button");
+                        bt.setAttribute("class","btn btn-primary");
+                        bt.setAttribute("id",tracking_number)
+                        bt.setAttribute("onmousedown","reprint(this.id)");
+                        td.appendChild(bt);
+                        tr.appendChild(td);
+                    }
+                    
                 }
                 
             },
@@ -374,7 +387,13 @@
 
     function reprint(tracking_number){
         window.location = "/order/re_print_tracking_number?tracking_number=" + tracking_number;
+    }
 
+    function assignTest(tracking_number){        
+        var trackingNumber = tracking_number.split("--")[0];
+        var testName = tracking_number.split("--")[1];
+  
+        window.location = "/order/confirm_order?tracking_number=" + trackingNumber + "&identifier="+ identifier + "&test_name=" + testName;
     }
 
     getRequestOrders();
