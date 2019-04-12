@@ -16,6 +16,7 @@ class OrderController < ApplicationController
         cat = OrderService.retrieve_test_catelog
         if cat != false
             @specimen_types = cat[test_name]
+            session["selected_tests"] = test_name
         end
     end
 
@@ -39,11 +40,13 @@ class OrderController < ApplicationController
         identifier = params[:identifier]
         specimen_type = params[:specimen_type]
         target_lab = params[:target_labs]
+        
 
         st = OrderService.update_order_confirmation(tracking_number,specimen_type,target_lab)
-        print_url = "/order/print_tracking_number?tracking_number=#{tracking_number}"
+        print_url = "/order/print_tracking_number?tracking_number=#{tracking_number}&priority=routine"
         print_and_redirect(print_url, "/order/requested_orders?identifier=#{identifier}")
     end
+
 
     def update_order_status
         tracking_number = params[:tracking_number]
