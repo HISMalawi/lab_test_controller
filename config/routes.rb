@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   post '/patient/select'                   => 'patient#select'
   get  '/patient/select'                   => 'patient#select'
   get '/patient/search_patient'            => 'patient#search_patient'
-  post '/patient/search_patient'            => 'patient#search_patient'
+  post '/patient/search_patient'           => 'patient#search_patient'
   get '/order/enter_result_value'          => 'order#enter_result_value'
   get '/order/save_results'                => 'order#save_result'
   get '/patient/search_by_name'            => 'patient#search_by_name'
@@ -29,6 +29,11 @@ Rails.application.routes.draw do
   post '/patient/set_patient_in_session'   => 'patient#set_patient_in_session'
   get '/patient/set_patient_in_session'    => 'patient#set_patient_in_session'
   post '/order/test_result_entry_confirmation'                 => 'order#test_result_entry_confirmation'
-  get '/order/test_result_entry_confirmation'                 => 'order#test_result_entry_confirmation'
+  get '/order/test_result_entry_confirmation'                  => 'order#test_result_entry_confirmation'
+  get '/order/edit_result'                 => 'order#edit_result'
+  post '/order/save_edited_result'         => 'order#save_edited_result'
+  get '/patient/search_by_arv_number'      => 'patient#search_by_arv_number'
+  get "/order/pull_requested_orders"       => 'order#pull_requested_orders'
+  get "/order/re_print_tracking_number"    => 'order#re_print_tracking_number'
 
 end

@@ -67,7 +67,7 @@
             var tr_number = 0;
             function updateTest(tracking_number)
             {   tr_number = tracking_number;
-                console.log(tracking_number);
+                
                 var _url = "/order/update_order_status?tracking_number=" + tracking_number;
                 jQuery.ajax({
                         url: _url,
@@ -76,7 +76,7 @@
                         {
                             
                             re = JSON.parse(res);
-                            console.log(re);
+                           
                             if (re[0] == 'order updated successfuly')
                             {  var id = "reprint_" + re[1];
                                var btn =  document.getElementById(id);
@@ -90,7 +90,7 @@
                         },
                         error: function(err)
                         {
-                            console.log(err);
+                           
                         }
                 })
             }
@@ -188,35 +188,11 @@
                                             <th>Date Ordered </th>
                                             <th>Requested by </th>
                                             <th>Tests Ordered </th>
+                                            <th></th>
                                         </tr>
                                     </thead>    
-                                    <tbody>
-                                    <% if @tests.length == 0%>
-                                        <td style='color:red;' colspan='4'>  no requested orders for the patient </td>
-                                    <% else %>
-                                        <% @tests.each{|test| %> 
-                                            <tr>
-                                                <td> <%= test['tracking_number']%> </td>
-                                                <td> <%= test['specimen_type']%> </td>
-                                                <td> <%= test['date_created'].to_time.strftime("%d-%b-%Y %H:%M") %> </td>
-                                                <td> <%= test['requested_by']%> </td>
-                                                <td> <%= test['tests'].join(',') %> </td>
-                                                <td>
-                                                    <% if test['specimen_type'] == 'not-assigned' %>
-                                                        <% _id = "drawn_#{test['tracking_number']}" %>
-                                                        <!-- <input id="<%= _id %>" style='font-size: 140%;padding:10%;' type="button" value="Drawn" class="btn btn-success btn-lg" onclick="updateTest('<%= test['tracking_number'] %>')"> -->
-                                                        <input id="<%= _id %>" style='font-size: 85%;padding:5%;' type="button" value="collect sample" class="btn btn-success btn-lg" onclick="assignTest('<%= test['tracking_number'] %>','<%= test['tests'].join(',') %>')"> 
-                                                    <% end %>   
-                                                </td>
-                                                <td>
-                                                    <% if test['specimen_type'] != 'not-assigned' %>
-                                                        <% _id = "reprint_#{test['tracking_number']}" %> 
-                                                        <input id="<%= _id %>" style='font-size: 85%;padding:10%;' type="button" value="re-print" class="btn btn-primary" onclick="reprint('<%= test['tracking_number'] %>')">
-                                                    <% end %>  
-                                                </td>
-                                            </tr>
-                                        <% } %>
-                                    <% end %>
+                                    <tbody id="requested_data">
+                                    
                                         
                                     </tbody>
                                 </table>
@@ -235,27 +211,8 @@
                             </div>
                             <div class="block-content collapse in">
                                 <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th>Patient ID</th>
-                                            <td class='anchor_class'><a href="#"><%= @national_id %></a></td>
-                                        </tr>
-                                        <tr>
-                                            <th>First Name</th>
-                                            <td class='anchor_class'><a href="#"><%= @name.split(" ")[0] %></a></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Last Name</th>
-                                            <td class='anchor_class'><a href="#"><%= @name.split(" ")[1] %></a></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Birthdate</th>
-                                            <td class='anchor_class'><a href="#"><%= @dob %> </a></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Gender</th>
-                                            <td class='anchor_class'><a href="#"><%= @gender %></a></td>
-                                        </tr>
+                                    <tbody id="demo">
+                                       
                                       
                                         
                                     </tbody>
@@ -276,24 +233,168 @@
                         
                       <button id="cancel" class="red left" onclick="WrongPatient()"><span>Search Again</span></button>
                        <% if config['permit_results_entry'] == true %> 
-                            <button  id="orderTests" class="green right" 
+                            <button class="green right" 
                                 onclick="window.location='/order/enter_result?identifier=<%= @national_id %>'">
                                     <span>Enter Results</span>
                             </button>
                         <% end %>
-                        <button  id="orderTests" class="blue right" 
-                            onclick="window.location='/order/order_test?identifier=<%= @national_id %>&name=<%= @name %>&gender=<%= @gender %>&dob=<%= @dob %>&address=<%= @address %>'">
-                                <span>Order Tests</span>
+                        <button  id="orderTests" class="blue right"> 
+                            <span>Order Tests</span>
                         </button>
-                        <button  id="orderTests" class="blue right" 
-                            <% first_name = @name.split(" ")[0] %>
-                            <% last_name = @name.split(" ")[1] %>
-                            onclick="window.location='/patient/search_by_name_results?first_name=<%= first_name %>&last_name=<%= last_name %>&gender=<%= @gender %>'">
-                                <span>Back </span>
-                        </button>
+                     
                     </div>
                 </div>
             </div> 
         </div>
     </body>
 </html> 
+
+<script>
+
+    var url = window.location.href;
+    url = new URL(url);
+    var tt_url;
+    var identifier = url.searchParams.get("identifier");
+    var url = "/order/pull_requested_orders?identifier=" + identifier;
+    var reprint_url;
+
+    
+    function getRequestOrders(){       
+        jQuery.ajax({
+            url: url,
+            success: function(res){
+                var tRows = document.getElementById("requested_data");
+                tRows.innerHTML = null;
+                var data = JSON.parse(res);                
+                var tests = data['tests'];
+                var demo = document.getElementById("demo");         
+
+                var tr = document.createElement("tr");
+                demo.appendChild(tr);
+                var td = document.createElement("td");
+                td.innerHTML =  "National Health ID:";
+                tr.appendChild(td);
+
+                var td = document.createElement("td");
+                td.innerHTML =  data["national_id"];
+                tr.appendChild(td);
+
+
+                var tr = document.createElement("tr");
+                demo.appendChild(tr);
+                var td = document.createElement("td");
+                td.innerHTML =  "Name:";
+                tr.appendChild(td);
+
+                var td = document.createElement("td");
+                td.innerHTML =  data["name"];
+                tr.appendChild(td);
+
+
+                var tr = document.createElement("tr");
+                demo.appendChild(tr);
+                var td = document.createElement("td");
+                td.innerHTML =  "Gender:";
+                tr.appendChild(td);
+
+                var td = document.createElement("td");
+                td.innerHTML =  data["gender"];
+                tr.appendChild(td);
+
+
+                var tr = document.createElement("tr");
+                demo.appendChild(tr);
+                var td = document.createElement("td");
+                td.innerHTML =  "Date of Birth:";
+                tr.appendChild(td);
+
+                var td = document.createElement("td");
+                td.innerHTML =  data["dob"];
+                tr.appendChild(td);
+
+                
+                var btnOrder = document.getElementById("orderTests");
+                tt_url = "/order/order_test?identifier=" + identifier;
+                console.log(btnOrder);
+                btnOrder.setAttribute("onmousedown", "orderPressed()");
+                var tracking_number;
+
+                for (var i = 0; i < tests.length;i ++){
+                    
+                    var tracking_number =  tests[i]['tracking_number']; 
+                    var sampleType = tests[i]['specimen_type'];
+                    var orderDate =  tests[i]['date_created'];
+                    var requestedBy =  tests[i]['requested_by'];
+                    var test =  tests[i]['tests'].join("");
+                    orderDate = new Date(orderDate);
+                    orderDate = orderDate.getFullYear() +"-" + orderDate.getMonth() +"-"+ orderDate.getDate() +" "+ orderDate.getHours() +":"+orderDate.getMinutes() +":"+orderDate.getSeconds()
+                    var tr = document.createElement("tr");
+                    tRows.appendChild(tr);
+                    var td = document.createElement("td");
+                    td.innerHTML =  tracking_number;
+                    tr.appendChild(td);
+
+                    var td = document.createElement("td");
+                    td.innerHTML =  sampleType;
+                    tr.appendChild(td);
+
+                    var td = document.createElement("td");
+                    td.innerHTML =  orderDate;
+                    tr.appendChild(td);
+
+                    var td = document.createElement("td");
+                    td.innerHTML =  requestedBy;
+                    tr.appendChild(td);
+
+                    var td = document.createElement("td");
+                    td.innerHTML =  test;
+                    tr.appendChild(td);
+
+                    if (sampleType == "not-assigned"){
+                        var td = document.createElement("td");
+                        var bt = document.createElement("input");
+                        bt.value = "collect sample";
+                        bt.setAttribute("type","button");
+                        bt.setAttribute("class","btn btn-success");
+                        bt.setAttribute("id",tracking_number +"--"+test)
+                        bt.setAttribute("onmousedown","assignTest(this.id)");
+                        td.appendChild(bt);
+                        tr.appendChild(td);
+                    }else{
+                        var td = document.createElement("td");
+                        var bt = document.createElement("input");
+                        bt.value = "reprint";
+                        bt.setAttribute("type","button");
+                        bt.setAttribute("class","btn btn-primary");
+                        bt.setAttribute("id",tracking_number)
+                        bt.setAttribute("onmousedown","reprint(this.id)");
+                        td.appendChild(bt);
+                        tr.appendChild(td);
+                    }
+                    
+                }
+                
+            },
+            error: function(err){
+
+            }
+        });
+    }
+
+    function orderPressed(){
+        location = tt_url;
+    }
+
+    function reprint(tracking_number){
+        window.location = "/order/re_print_tracking_number?tracking_number=" + tracking_number;
+    }
+
+    function assignTest(tracking_number){        
+        var trackingNumber = tracking_number.split("--")[0];
+        var testName = tracking_number.split("--")[1];
+  
+        window.location = "/order/confirm_order?tracking_number=" + trackingNumber + "&identifier="+ identifier + "&test_name=" + testName;
+    }
+
+    getRequestOrders();
+</script>
