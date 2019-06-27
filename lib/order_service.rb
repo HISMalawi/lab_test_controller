@@ -119,8 +119,9 @@ module OrderService
         require 'auto12epl'
         test = test[0]
         auto = Auto12Epl.new
+	tm = Time.now.strftime("%Y-%m-%d") + " " + Time.now.strftime("%H:%M:%S")
         s =  auto.generate_epl(patient[1].to_s, patient[2].to_s, patient[0].to_s, patient[3].to_s, "", patient[4].to_s,
-                               "", collector, '', test,
+                               "", collector, tm, test,
                                priority, tracking_number.to_s, tracking_number)
         return s
     end
