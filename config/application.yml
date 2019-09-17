@@ -1,3 +1,4 @@
 district: 'Lilongwe'
-facility_name: 'Kamuzu Central Hospital'
-permit_results_entry: true
+facility_name: 'Lighthouse'
+permit_results_entry: false
+

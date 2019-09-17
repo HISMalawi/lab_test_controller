@@ -1,4 +1,4 @@
-require 'patient_service'
+require 'patient_service.rb'
 class PatientController < ApplicationController
 
     def confirm
@@ -74,8 +74,8 @@ class PatientController < ApplicationController
                     birthdate = data['birthdate']
                     first_name = data['names'][0]['given_name']
                     last_name = data['names'][0]['family_name']
-                    city_village = data['addresses'][0]['city_village']
-                    state_province = data['addresses'][0]['state_province']
+                    city_village = data['addresses'][0]['city_village'] rescue nil
+                    state_province = data['addresses'][0]['state_province'] rescue nil
                     r = PatientService.search_patient_identifiers_by_patient_id(person_id,session[:user][0])
                     
                     if r[0] == true

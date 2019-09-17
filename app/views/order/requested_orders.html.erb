@@ -191,7 +191,7 @@
                                             <th></th>
                                         </tr>
                                     </thead>    
-                                    <tbody id="requested_data">
+                                    <tbody id="requested_data" style="font-size: 50%">
                                     
                                         
                                     </tbody>
@@ -234,7 +234,7 @@
                       <button id="cancel" class="red left" onclick="WrongPatient()"><span>Search Again</span></button>
                        <% if config['permit_results_entry'] == true %> 
                             <button class="green right" 
-                                onclick="window.location='/order/enter_result?identifier=<%= @national_id %>'">
+                                onclick="enterResu()">
                                     <span>Enter Results</span>
                             </button>
                         <% end %>
@@ -258,6 +258,10 @@
     var url = "/order/pull_requested_orders?identifier=" + identifier;
     var reprint_url;
 
+function enterResu(){
+
+	window.location = '/order/enter_result?identifier=' + identifier;
+}
     
     function getRequestOrders(){       
         jQuery.ajax({
@@ -318,6 +322,15 @@
                 console.log(btnOrder);
                 btnOrder.setAttribute("onmousedown", "orderPressed()");
                 var tracking_number;
+		if (tests.length == 0){
+                    var tr = document.createElement("tr");
+                    tRows.appendChild(tr);
+                    var td = document.createElement("td");
+                    td.innerHTML =  "no requested tests are found";
+                    td.style.color = "red";
+                    tr.appendChild(td);
+
+		}else{
 
                 for (var i = 0; i < tests.length;i ++){
                     
@@ -325,9 +338,9 @@
                     var sampleType = tests[i]['specimen_type'];
                     var orderDate =  tests[i]['date_created'];
                     var requestedBy =  tests[i]['requested_by'];
-                    var test =  tests[i]['tests'].join("");
+                    var test =  tests[i]['tests'].join("<br />");
                     orderDate = new Date(orderDate);
-                    orderDate = orderDate.getFullYear() +"-" + orderDate.getMonth() +"-"+ orderDate.getDate() +" "+ orderDate.getHours() +":"+orderDate.getMinutes() +":"+orderDate.getSeconds()
+                    orderDate = orderDate.getFullYear() +"-" + (orderDate.getMonth() + 1) +"-"+ orderDate.getDate() +" "+ orderDate.getHours() +":"+orderDate.getMinutes() +":"+orderDate.getSeconds()
                     var tr = document.createElement("tr");
                     tRows.appendChild(tr);
                     var td = document.createElement("td");
@@ -373,7 +386,7 @@
                     }
                     
                 }
-                
+              }
             },
             error: function(err){
 
